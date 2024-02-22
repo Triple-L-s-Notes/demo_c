@@ -90,3 +90,6 @@ yarn-error.log
 .idea
 
 /.history
+
+/.vscode
+/cmake-build-debug
