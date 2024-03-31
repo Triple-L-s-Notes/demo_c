@@ -9,8 +9,7 @@
 #include "utils.h"
 
 // This is the main function, it will get called first when you run your program
-int main()
-{
+int main() {
 
     /*
      * We are going to be designing a procedure that reads, modifies, then writes data.
@@ -71,7 +70,13 @@ int main()
     // create this memory at runtime. You'll have to use malloc (https://man7.org/linux/man-pages/man3/malloc.3.html)
     // to create a pointer to a new buffer of the correct size (hdrLen + dataLen)
     // <code here>
-    uint8_t *buffer = (uint8_t *)malloc(pkt.hdrLen + pkt.dataLen);
+    char *packetBuffer = (char *) malloc(pkt.hdrLen + pkt.dataLen);
+
+    if (packetBuffer == NULL) {
+        printf("Memory allocation failed!\n");
+        return 1; // Return an error code
+    }
+
     // Transfer data from the pkt struct we built into this new buffer
     // Remember the structure of the packet
     /*
@@ -82,7 +87,23 @@ int main()
     // (hint: try using memcpy [https://man7.org/linux/man-pages/man3/memcpy.3.html],
     // you may have to copy struct fields over individually, think about why?)
     // <code here>
-    memcpy(buffer, &pkt.hdrLen, 1);
+    char *ptr = packetBuffer;
+
+    // Copy hdrLen
+    memcpy(ptr, &(pkt.hdrLen), sizeof(uint8_t));
+    ptr += sizeof(uint8_t);
+
+    // Copy checksum
+    memcpy(ptr, &(pkt.checksum), sizeof(uint8_t));
+    ptr += sizeof(uint8_t);
+
+    // Copy dataLen
+    memcpy(ptr, &(pkt.dataLen), sizeof(uint8_t));
+    ptr += sizeof(uint8_t);
+
+    // Copy data
+    memcpy(ptr, pkt.data, pkt.dataLen);
+
     /* END STEP 3: Your packet should now be loaded into a buffer of continuous memory */
 
     /* STEP 4: SEND OUT YOUR PACKET */
@@ -90,7 +111,7 @@ int main()
     // then use printf to print the buffer to the commandline. Implement the printPacket function in utils.c below
     // and call it here
     // <code here>
-    printPacket(buffer, pkt.hdrLen + pkt.dataLen);
+    printPacket(packetBuffer, pkt.hdrLen + pkt.dataLen);
     /* END STEP 4: compile and run your executable, your input will be encoded then printed to the console as a
      * sequence of bytes */
 

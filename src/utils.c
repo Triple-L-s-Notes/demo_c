@@ -12,8 +12,7 @@
  */
 
 /* DEFINE FOR STEP 1 */
-void getUserInput(char *buffer)
-{
+void getUserInput(char *buffer) {
     // Use printf to prompt the user to enter a string
     // <code here>
     printf("Enter a string: ");
@@ -26,19 +25,21 @@ void getUserInput(char *buffer)
     // to shorten the string to exclude the newline character.
     // (hint: use a loop to inspect each character in the buffer and change the newline to a null terminator)
     // <code here>
-    for (int i = 0; i < 256; i++)
-    {
-        if (buffer[i] == '\n')
-        {
-            buffer[i] = '\0';
+    while (*buffer != '\0') {
+        // If the current character is a newline
+        if (*buffer == '\n') {
+            // Replace it with a null terminator
+            *buffer = '\0';
+            // Break out of the loop
             break;
         }
+        // Move to the next character
+        buffer++;
     }
 }
 
 /* DEFINE FOR STEP 2 */
-void parseInput(char *buffer, pkt_t *pkt)
-{
+void parseInput(char *buffer, pkt_t *pkt) {
 
     // Determine the length of the data in the buffer (check out https://man7.org/linux/man-pages/man3/strlen.3.html)
     // <code here>
@@ -63,19 +64,21 @@ void parseInput(char *buffer, pkt_t *pkt)
     //
     // (hint: you should use a loop here)
     // <code here>
-    for (int i = 0; i < pkt->dataLen; i++)
-    {
-        pkt->checksum ^= pkt->data[i];
+    uint8_t checksum = 0;
+    for (int i = 0; i < pkt->dataLen; i++) {
+        checksum ^= buffer[i];
     }
+    pkt->checksum = checksum;
     // Set the length of the pkt header
     // (hint: check out the pkt_t struct definition)
     // <code here>
-    pkt->hdrLen = 3;
+
+    // Set the length of the pkt header
+    pkt->hdrLen = sizeof(pkt_t) - sizeof(char *);
 }
 
 /* DEFINE FOR STEP 4 */
-void printPacket(uint8_t *buffer, uint16_t bufSize)
-{
+void printPacket(uint8_t *buffer, uint16_t bufSize) {
 
     // The format of the output string should be as follows:
     // Bytes should be in uppercase hex format (0x00 - 0xFF) with a space between them.
@@ -85,8 +88,8 @@ void printPacket(uint8_t *buffer, uint16_t bufSize)
     // to properly print your hex values.
     // (hint: you may need to loop through each byte in the array and print them individually)
     // <code here>
-    for (int i = 0; i < bufSize; i++)
-    {
+    for (int i = 0; i < bufSize; i++) {
+        // Print each byte in uppercase hex format with a space between them
         printf("0x%02X ", buffer[i]);
     }
     // Print a final "\n" newline character to avoid issues with the console.
